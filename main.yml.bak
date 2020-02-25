@@ -1,0 +1,39 @@
+---
+- name: Deploy Ansible Tower to a K8s cluster using the Tower Operator
+  hosts: localhost
+  gather_facts: false
+  connection: local
+  vars: 
+    deployment_namespace: tower
+
+  collections:
+    - community.kubernetes
+  
+  tasks:
+    - name: Ensure the namespace exists.
+      k8s:
+        api_version: v1
+        kind: Namespace
+        name: "{{ deployment_namespace }}"
+        state: present
+    - name: Create PV
+      k8s:
+        state: present
+        src: ../files/pv.yml
+
+
+    - name: Apply Tower Operator
+      k8s:
+        state: present
+        definition: "{{ lookup('url', 'https://raw.githubusercontent.com/geerlingguy/tower-operator/master/deploy/tower-operator.yaml', use_proxy=false, split_lines=false) }}"
+        namespace: default
+    # - name: Apply Tower Operakiub tor
+    #   command: kubectl apply -f https://raw.githubusercontent.com/geerlingguy/tower-operator/master/deploy/tower-operator.yaml
+    
+    - name: Apply Tower config 
+      k8s:
+        state: present
+        src: ../files/config.yml
+
+    - name: Expose minikube ingress
+      command: minikube addons ingress enable

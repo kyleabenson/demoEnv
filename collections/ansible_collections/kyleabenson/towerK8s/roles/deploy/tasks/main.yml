@@ -1,0 +1,29 @@
+---
+    - name: Ensure the namespace exists.
+      k8s:
+        api_version: v1
+        kind: Namespace
+        name: "{{ deployment_namespace }}"
+        state: "{{ deployment_state }}"
+
+    - name: Create PV
+      k8s:
+        state: "{{ deployment_state }}"
+        src: ./collections/ansible_collections/kyleabenson/towerK8s/roles/deploy/files/pv.yml
+
+
+    - name: Apply Tower Operator
+      k8s:
+        state: "{{ deployment_state }}"
+        definition: "{{ lookup('url', 'https://raw.githubusercontent.com/geerlingguy/tower-operator/master/deploy/tower-operator.yaml', use_proxy=false, split_lines=false) }}"
+        namespace: default
+    
+    - name: Apply Tower config 
+      k8s:
+        state: "{{ deployment_state }}"
+        src: ./collections/ansible_collections/kyleabenson/towerK8s/roles/deploy/files/config.yml
+      when: deployment_state == "present"
+
+    - name: Expose minikube ingress
+      command: minikube addons ingress enable
+      when: deployment_state == "present"

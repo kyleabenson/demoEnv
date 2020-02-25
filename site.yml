@@ -1,0 +1,17 @@
+---
+- name: Deploy Ansible Tower to a K8s cluster using the Tower Operator
+  hosts: localhost
+  gather_facts: false
+  connection: local
+  vars: 
+    deployment_namespace: tower
+    deployment_state: present
+
+  collections:
+    - community.kubernetes
+    - kyleabenson.towerK8s
+  
+  tasks:
+    - name: Include deployment collection
+      import_role: 
+        name: deploy
