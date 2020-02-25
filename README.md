@@ -12,9 +12,13 @@ This demo environment highlights a few key concepts including:
  
  ### Minikube
  If you're using minikube you can start your machine one time with the following config:
- ` minikube start --memory 6g --cpus 4`
-
- Or make the changes permament by using the `minikube config` commands
+ 
+ ``` 
+ minikube config set cpus 4
+ minikube config set memory 8192
+ minikube delete
+ minikube start
+ ```
 
  After the deployment has occured you can use your local resolve file (usually /etc/hosts) to point find the tower app like so:
  `echo "$(minikube ip)    tower.test  " >> /etc/hosts `
