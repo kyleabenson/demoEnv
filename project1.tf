@@ -21,6 +21,10 @@ resource "google_cloud_run_v2_service" "default" {
         value = "otlp"
       }
       env {
+        name ="OTEL_METRICS_EXPORTER"
+        value = "otlp"
+      }
+      env {
         name = "OTEL_EXPORTER_OTLP_ENDPOINT"
         value = "http://localhost:4317"
       }
